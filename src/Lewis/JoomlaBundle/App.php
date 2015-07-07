@@ -6,6 +6,8 @@ class App
 {
     public function execute()
     {
-        return "hello";
+        $router = new Router();
+
+        return $router->match();
     }
 }
