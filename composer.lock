@@ -1,0 +1,115 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "e2f98949541d2a3ea65d7645e988710a",
+    "packages": [
+        {
+            "name": "windwalker/data",
+            "version": "2.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ventoviro/windwalker-data.git",
+                "reference": "83c51cf3186720e146774bcf39b76ef1a2c5e18f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ventoviro/windwalker-data/zipball/83c51cf3186720e146774bcf39b76ef1a2c5e18f",
+                "reference": "83c51cf3186720e146774bcf39b76ef1a2c5e18f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.10"
+            },
+            "require-dev": {
+                "windwalker/test": "~2.0"
+            },
+            "type": "windwalker-package",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Windwalker\\Data\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.0+"
+            ],
+            "description": "Windwalker Data package",
+            "homepage": "https://github.com/ventoviro/windwalker-data",
+            "keywords": [
+                "data",
+                "framework",
+                "windwalker"
+            ],
+            "time": "2015-04-04 07:29:34"
+        },
+        {
+            "name": "windwalker/datamapper",
+            "version": "2.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ventoviro/windwalker-datamapper.git",
+                "reference": "6e87f0db2063497246ad486f4cca95af5e207703"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ventoviro/windwalker-datamapper/zipball/6e87f0db2063497246ad486f4cca95af5e207703",
+                "reference": "6e87f0db2063497246ad486f4cca95af5e207703",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.10",
+                "windwalker/data": "~2.0"
+            },
+            "require-dev": {
+                "windwalker/compare": "~2.0",
+                "windwalker/database": "~2.0",
+                "windwalker/test": "~2.0"
+            },
+            "suggest": {
+                "windwalker/compare": "Install 2.* if you want to use Compare object.",
+                "windwalker/database": "Install 2.* if you want Windwalker Database."
+            },
+            "type": "windwalker-package",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Windwalker\\DataMapper\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.0+"
+            ],
+            "description": "Windwalker DataMapper package",
+            "homepage": "https://github.com/ventoviro/windwalker-datamapper",
+            "keywords": [
+                "datamapper",
+                "framework",
+                "windwalker"
+            ],
+            "time": "2015-02-17 05:43:57"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=5.3.0"
+    },
+    "platform-dev": []
+}

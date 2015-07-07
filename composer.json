@@ -1,0 +1,21 @@
+{
+    "name": "lewis/lewisJoomla",
+    "type": "library",
+    "description": "The Lewis Joomla rad",
+    "authors": [
+        {
+            "name": "Lewis Jang",
+            "email": "lewis.aedes@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "windwalker/data": "*",
+        "windwalker/datamapper": "*"
+    },
+    "autoload": {
+        "psr-0": {
+            "" : "src"
+        }
+    }
+}
