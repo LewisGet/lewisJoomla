@@ -2,12 +2,16 @@
 
 namespace Lewis\JoomlaBundle;
 
-use \Lewis\Request\RequestInterface;
-
 class Router extends \Lewis\Router\Router
 {
-    public function __construct()
+    /**
+     * @var \Lewis\JoomlaBundle\Config
+     */
+    public $config;
+
+    public function __construct($config)
     {
+        $this->config = $config;
     }
 
     public function match()
@@ -20,13 +24,35 @@ class Router extends \Lewis\Router\Router
 
         $namespace = implode("\\", $tasks);
 
-        if (! property_exists($namespace, "display"))
+        if (! $this->canRequest($tasks))
         {
-            // controller not exist
-
-            return call_user_func("\\Lewis\\JoomlaBundle\\DefaultController::display");
+            return call_user_func("\\Lewis\\JoomlaBundle\\NotFoundController::execute");
         }
 
-        return call_user_func("{$namespace}::display");
+        if (! property_exists($namespace, "execute"))
+        {
+            // controller not exist
+            $requestDoing = end($tasks);
+            $requestDoing = ucfirst($requestDoing);
+
+            return call_user_func("\\Lewis\\JoomlaBundle\\Controller\\Default{$requestDoing}Controller::execute", $tasks);
+        }
+
+        return call_user_func("{$namespace}::execute");
+    }
+
+    public function canRequest($tasks)
+    {
+        $requestClass = current($tasks);
+        $requestDoing = end($tasks);
+
+        $functions = $this->config->getTableFunctions($requestClass);
+
+        if (! in_array($requestDoing, $functions))
+        {
+            return false;
+        }
+
+        return true;
     }
 }
