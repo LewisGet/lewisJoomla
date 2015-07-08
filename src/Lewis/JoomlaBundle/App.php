@@ -2,6 +2,7 @@
 
 namespace Lewis\JoomlaBundle;
 
+use Lewis\Di\Container;
 use Lewis\TableCreater\TableCreater;
 
 class App
@@ -9,43 +10,44 @@ class App
     /**
      * @var \Lewis\JoomlaBundle\Config
      */
-    public $config;
-
-    public $jconfig;
+    public $container;
 
     public $appRootPath;
 
     public $projectName;
 
-    public $db;
-
     public function __construct($appRoot, $projectName, $config, $checkDatabase = false)
     {
-        $this->appRootPath = $appRoot;
-        $this->projectName = $projectName;
+        $this->container = new Container();
 
-        $this->jconfig = new \JConfig();
-        $this->setConfig($config);
+        $this->container->set("db", \JFactory::getDbo());
+        $this->container->set("jconfig", new \JConfig());
+        $this->container->set("appRootPath", $appRoot);
+        $this->container->set("projectName", $projectName);
+        $this->container->set("config", new Config($config));
 
-        $this->db = \JFactory::getDbo();
+        $db = $this->container->get("db");
+        $config = $this->container->get("config");
+        $jconfig = $this->container->get("jconfig");
 
         if ($checkDatabase)
         {
-            $tableCreater = new TableCreater($this->db, $this->jconfig->db, $this->jconfig->dbprefix);
+            $tableCreater = new TableCreater(
+                $db,
+                $jconfig->db,
+                $jconfig->dbprefix
+            );
 
-            $tableCreater->createTables($this->config->columns);
+            $tableCreater->createTables($config->columns);
         }
     }
 
     public function execute()
     {
-        $router = new Router($this->config);
+        $this->container = new Container();
+
+        $router = new Router($this->container->get("config"));
 
         return $router->match();
-    }
-
-    public function setConfig($config)
-    {
-        $this->config = new Config($config);
     }
 }
