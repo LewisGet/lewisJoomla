@@ -2,6 +2,8 @@
 
 namespace Lewis\JoomlaBundle;
 
+use Lewis\TableCreater\TableCreater;
+
 class App
 {
     /**
@@ -9,14 +11,30 @@ class App
      */
     public $config;
 
+    public $jconfig;
+
     public $appRootPath;
 
     public $projectName;
 
-    public function __construct($appRoot, $projectName)
+    public $db;
+
+    public function __construct($appRoot, $projectName, $config, $checkDatabase = false)
     {
         $this->appRootPath = $appRoot;
         $this->projectName = $projectName;
+
+        $this->jconfig = new \JConfig();
+        $this->setConfig($config);
+
+        $this->db = \JFactory::getDbo();
+
+        if ($checkDatabase)
+        {
+            $tableCreater = new TableCreater($this->db, $this->jconfig->db, $this->jconfig->dbprefix);
+
+            $tableCreater->createTables($this->config->columns);
+        }
     }
 
     public function execute()
