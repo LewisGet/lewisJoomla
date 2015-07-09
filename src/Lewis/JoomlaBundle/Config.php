@@ -36,6 +36,19 @@ class Config
      */
     public $columns = array();
 
+    /**
+     * array(
+     *     item => array(
+     *         array(id => int)
+     *         array(name => string)
+     *         array(cat => int)
+     *     )
+     * )
+     *
+     * @var array
+     */
+    public $forms = array();
+
     public $original = array();
 
     public function __construct($config)
@@ -47,6 +60,7 @@ class Config
             // add table name
             $this->table[] = $tableName;
 
+            $this->forms[$tableName] = array();
             $this->columns[$tableName] = array();
 
             foreach ($tableColumns as $columName => $columnFunctions)
@@ -61,6 +75,11 @@ class Config
                 }
 
                 $this->columns[$tableName][$columName] = $columType;
+
+                if ($columnFunctions['form'])
+                {
+                    $this->forms[$tableName][$columName] = $columType;
+                }
 
                 // table functions
                 if (! isset($this->functions[$tableName]))
@@ -93,5 +112,10 @@ class Config
     public function getTableColumnFunctions($tableName)
     {
         return $this->original[$tableName];
+    }
+
+    public function getTableFormColumns($tableName)
+    {
+        return $this->forms[$tableName];
     }
 }
