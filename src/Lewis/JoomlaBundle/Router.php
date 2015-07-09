@@ -35,10 +35,12 @@ class Router extends \Lewis\Router\Router
             $requestDoing = end($tasks);
             $requestDoing = ucfirst($requestDoing);
 
-            return call_user_func("\\Lewis\\JoomlaBundle\\Controller\\Default{$requestDoing}Controller::execute", $tasks);
+            $namespace = "\\Lewis\\JoomlaBundle\\Controller\\Default{$requestDoing}Controller";
         }
 
-        return call_user_func("{$namespace}::execute");
+        $controller = new $namespace();
+
+        return $controller->execute($tasks);
     }
 
     public function canRequest($tasks)
