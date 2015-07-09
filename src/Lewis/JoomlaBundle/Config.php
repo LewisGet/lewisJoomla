@@ -89,4 +89,9 @@ class Config
     {
         return $this->columns[$tableName];
     }
+
+    public function getTableColumnFunctions($tableName)
+    {
+        return $this->original[$tableName];
+    }
 }
