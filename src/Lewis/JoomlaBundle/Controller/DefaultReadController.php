@@ -23,6 +23,8 @@ class DefaultReadController
 
     public function getItems($tasks)
     {
+        $app = \JFactory::getApplication();
+
         $this->container = new Container();
         $this->db = $this->container->get("db");
         $this->config = $this->container->get("config");
@@ -32,15 +34,32 @@ class DefaultReadController
         $q = $this->db->getQuery(true);
 
         $select = array();
+        $whereSql = array();
 
         foreach ($this->config->getTableReadColumns($tableName) as $columnName => $columnType)
         {
             $columnAlias = $tableName . ucfirst($columnName);
+            $columnField = $this->db->quoteName($tableName) . "." . $this->db->quoteName($columnName);
 
-            $select[] = "{$tableName}.{$columnName} AS {$columnAlias}";
+            $select[] = "{$columnField} AS {$columnAlias}";
+
+            $whereValue = $app->input->getString($columnAlias);
+
+            if ("id" == $columnType and $whereValue !== null)
+            {
+                $whereValue = explode(",", $whereValue);
+                $whereValue = array_map(array($this->db, "quote"), $whereValue);
+
+                $whereSql[] = $columnField . "in(" . implode(",", $whereValue) . ")";
+            }
         }
 
         $q->select(implode(",", $select))->from("#__{$tableName} as {$tableName}");
+
+        if (! empty($whereSql))
+        {
+            $q->where($whereSql);
+        }
 
         return $this->db->setQuery($q)->loadObjectList();
     }
