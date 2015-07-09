@@ -49,6 +49,19 @@ class Config
      */
     public $forms = array();
 
+    /**
+     * array(
+     *     item => array(
+     *         array(id => int)
+     *         array(name => string)
+     *         array(cat => int)
+     *     )
+     * )
+     *
+     * @var array
+     */
+    public $reads = array();
+
     public $original = array();
 
     public function __construct($config)
@@ -75,6 +88,11 @@ class Config
                 }
 
                 $this->columns[$tableName][$columName] = $columType;
+
+                if ($columnFunctions['read'])
+                {
+                    $this->reads[$tableName][$columName] = $columType;
+                }
 
                 if ($columnFunctions['form'])
                 {
@@ -117,5 +135,10 @@ class Config
     public function getTableFormColumns($tableName)
     {
         return $this->forms[$tableName];
+    }
+
+    public function getTableReadColumns($tableName)
+    {
+        return $this->reads[$tableName];
     }
 }

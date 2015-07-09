@@ -33,13 +33,8 @@ class DefaultReadController
 
         $select = array();
 
-        foreach ($this->config->getTableColumnFunctions($tableName) as $columnName => $column)
+        foreach ($this->config->getTableReadColumns($tableName) as $columnName => $columnType)
         {
-            if (! in_array("read", array_keys($column)))
-            {
-                continue;
-            }
-
             $columnAlias = $tableName . ucfirst($columnName);
 
             $select[] = "{$tableName}.{$columnName} AS {$columnAlias}";
