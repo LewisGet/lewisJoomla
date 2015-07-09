@@ -24,6 +24,19 @@ class Router extends \Lewis\Router\Router
 
         $namespace = implode("\\", $tasks);
 
+        $requestClass = $tasks[0];
+        $requestDoing = $tasks[1];
+        $requestDoing = ucfirst($requestDoing);
+
+        if ("template" == $requestClass)
+        {
+            $namespace = "\\Lewis\\JoomlaBundle\\Controller\\TemplateController";
+
+            $controller = new $namespace();
+
+            return $controller->execute($requestDoing);
+        }
+
         if (! $this->canRequest($tasks))
         {
             return call_user_func("\\Lewis\\JoomlaBundle\\NotFoundController::execute");
@@ -31,10 +44,6 @@ class Router extends \Lewis\Router\Router
 
         if (! property_exists($namespace, "execute"))
         {
-            // controller not exist
-            $requestDoing = end($tasks);
-            $requestDoing = ucfirst($requestDoing);
-
             $namespace = "\\Lewis\\JoomlaBundle\\Controller\\Default{$requestDoing}Controller";
         }
 
@@ -45,8 +54,8 @@ class Router extends \Lewis\Router\Router
 
     public function canRequest($tasks)
     {
-        $requestClass = current($tasks);
-        $requestDoing = end($tasks);
+        $requestClass = $tasks[0];
+        $requestDoing = $tasks[1];
 
         $functions = $this->config->getTableFunctions($requestClass);
 

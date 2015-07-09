@@ -23,6 +23,9 @@ class App
         $this->container->set("db", \JFactory::getDbo());
         $this->container->set("jconfig", new \JConfig());
         $this->container->set("appRootPath", $appRoot);
+        $this->container->set("bundlePath", __DIR__);
+        $this->container->set("templatePath", JPATH_THEMES);
+        $this->container->set("rootPath", JPATH_ROOT);
         $this->container->set("projectName", $projectName);
         $this->container->set("config", new Config($config));
 
