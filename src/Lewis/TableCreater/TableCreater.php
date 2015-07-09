@@ -40,6 +40,9 @@ class TableCreater
             {
                 switch ($columnType)
                 {
+                    case("id"):
+                        $typeSql = " INT(11) ";
+                        break;
                     case("int"):
                         $typeSql = " INT(11) ";
                     break;
@@ -51,7 +54,7 @@ class TableCreater
                     break;
                 }
 
-                if ("id" == $columnName)
+                if ("id" == $columnType)
                 {
                     $typeSql .= " UNSIGNED AUTO_INCREMENT PRIMARY KEY";
                 }
