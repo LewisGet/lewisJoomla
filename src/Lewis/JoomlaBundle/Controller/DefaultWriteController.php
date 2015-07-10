@@ -2,65 +2,22 @@
 
 namespace Lewis\JoomlaBundle\Controller;
 
-use Lewis\Di\Container;
-
-class DefaultWriteController
+class DefaultWriteController extends BaseController
 {
-    public $container;
-
-    public function setItems($tasks)
+    public function setItems()
     {
-        $app = \JFactory::getApplication();
+        $q = $this->db->getQuery(true);
 
-        $tableName = $tasks[0];
-        $this->container = new Container();
-
-        /**
-         * @var \JDatabaseDriverMysqli
-         */
-        $db = $this->container->get("db");
-
-        /**
-         * @var \Lewis\JoomlaBundle\Config
-         */
-        $config = $this->container->get("config");
-
-        $q = $db->getQuery(true);
-
-        $columns = $config->getTableColumnFunctions($tableName);
+        $columns = $this->config->getTableWriteColumns($this->tableName);
 
         $insertColumns = array();
         $insertValue   = array();
         $updateValue   = array();
         $whereSql      = array();
 
-        foreach ($columns as $columnName => $functions)
+        foreach ($columns as $columnName => $columnType)
         {
-            if (! in_array("write", array_keys($functions)))
-            {
-                continue;
-            }
-
-            $columnType  = $functions['write'];
-            $columnAlias = $tableName . ucfirst($columnName);
-
-            switch ($columnType)
-            {
-                case("id"):
-                    $value = $app->input->getString($columnAlias, null);
-
-                    $value = array_map('intval', explode(',', $value));
-                break;
-                case("int"):
-                    $value = $app->input->getInt($columnAlias, null);
-                break;
-                case("string"):
-                    $value = $app->input->getString($columnAlias, null);
-                break;
-                default:
-                    $value = $app->input->getString($columnAlias, null);
-                break;
-            }
+            $value = $this->helper->getInputValue($columnName, $columnType, false);
 
             if (empty($value))
             {
@@ -71,19 +28,19 @@ class DefaultWriteController
             {
                 if (is_array($value))
                 {
-                    $whereSql[] = "{$columnName} in(" . implode(",", $db->quote($value)) . ")";
+                    $whereSql[] = $this->helper->getSqlIn($columnName, $value, false);
                 }
                 else
                 {
-                    $whereSql[] = "{$columnName} = " . $db->quote($value);
+                    $whereSql[] = $this->helper->getSqlSame($columnName, $value, false);
                 }
 
                 continue;
             }
 
-            $insertColumns[] = $columnName;
-            $insertValue[] = $value;
-            $updateValue[] = $db->quoteName($columnName) . " = " . $db->quote($value);
+            $insertColumns[] = $this->db->quoteName($columnName);
+            $insertValue[]   = $this->db->quote($value);
+            $updateValue[]   = $this->helper->getSqlSame($columnName, $value, false);
         }
 
         if (empty($insertValue))
@@ -93,25 +50,25 @@ class DefaultWriteController
 
         if (empty($whereSql))
         {
-            $q->insert($db->quoteName("#__{$tableName}"))
-                ->columns($db->quoteName($insertColumns))
+            $q->insert($this->helper->getTableSqlName(false))
+                ->columns($insertColumns)
                 ->values(implode(',', $insertValue));
         }
         else
         {
-            $q->update($db->quoteName("#__{$tableName}"))
+            $q->update($this->helper->getTableSqlName(false))
                 ->set($updateValue)
                 ->where($whereSql);
         }
 
-        $db->setQuery($q);
-        $db->execute();
+        $this->db->setQuery($q);
+        $this->db->execute();
 
         return true;
     }
 
-    public function execute($tasks)
+    public function execute()
     {
-        return $this->setItems($tasks);
+        return $this->setItems();
     }
 }

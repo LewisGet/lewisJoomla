@@ -62,6 +62,19 @@ class Config
      */
     public $reads = array();
 
+    /**
+     * array(
+     *     item => array(
+     *         array(id => int)
+     *         array(name => string)
+     *         array(cat => int)
+     *     )
+     * )
+     *
+     * @var array
+     */
+    public $writes = array();
+
     public $original = array();
 
     public function __construct($config)
@@ -74,6 +87,7 @@ class Config
             $this->table[] = $tableName;
 
             $this->forms[$tableName] = array();
+            $this->writes[$tableName] = array();
             $this->columns[$tableName] = array();
 
             foreach ($tableColumns as $columName => $columnFunctions)
@@ -88,6 +102,11 @@ class Config
                 }
 
                 $this->columns[$tableName][$columName] = $columType;
+
+                if (isset ($columnFunctions['write']))
+                {
+                    $this->writes[$tableName][$columName] = $columType;
+                }
 
                 if ($columnFunctions['read'])
                 {
@@ -130,6 +149,11 @@ class Config
     public function getTableColumnFunctions($tableName)
     {
         return $this->original[$tableName];
+    }
+
+    public function getTableWriteColumns($tableName)
+    {
+        return $this->writes[$tableName];
     }
 
     public function getTableFormColumns($tableName)

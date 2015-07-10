@@ -14,6 +14,11 @@ class Router extends \Lewis\Router\Router
         $this->config = $config;
     }
 
+    /**
+     * return match controller, by config
+     *
+     * @return object
+     */
     public function match()
     {
         jimport('joomla.environment.request');
@@ -47,11 +52,17 @@ class Router extends \Lewis\Router\Router
             $namespace = "\\Lewis\\JoomlaBundle\\Controller\\Default{$requestDoing}Controller";
         }
 
-        $controller = new $namespace();
+        $controller = new $namespace($tasks[0], $tasks[1]);
 
-        return $controller->execute($tasks);
+        return $controller->execute();
     }
 
+    /**
+     * check task is register in config
+     *
+     * @param $tasks
+     * @return bool
+     */
     public function canRequest($tasks)
     {
         $requestClass = $tasks[0];

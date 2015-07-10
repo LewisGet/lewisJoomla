@@ -2,68 +2,21 @@
 
 namespace Lewis\JoomlaBundle\Controller;
 
-use Lewis\Di\Container;
-
-class DefaultFormController
+class DefaultFormController extends BaseController
 {
-    public $container;
-
-    /**
-     * return json used angular build form
-     *
-     * @param $tasks
-     * @return array
-     */
-    public function getFormData($tasks)
+    public function getForm()
     {
-        $tableName = $tasks[0];
-
-        $this->container = new Container();
-
-        $app = \JFactory::getApplication();
-
-        /**
-         * @var \JDatabaseDriverMysqli
-         */
-        $db = $this->container->get("db");
-
-        /**
-         * @var \Lewis\JoomlaBundle\Config
-         */
-        $config = $this->container->get("config");
-
-        $forms = $config->getTableFormColumns($tableName);
-
-        $formIdFildName = array_keys($forms, "id");
-
-        $formData = array();
-
-        if (! empty($formIdFildName))
-        {
-            $q = $db->getQuery(true);
-
-            $whereSql = array();
-
-            foreach ($formIdFildName as $fieldName)
-            {
-                $whereSql[] = $db->quoteName($tableName) . "." . $db->quoteName($fieldName) . " = " .
-                    $db->quote(
-                        $app->input->getString($tableName . ucfirst($fieldName))
-                    );
-            }
-
-            $q->select("*")->from($db->quoteName("#__{$tableName}") . " AS " . $db->quoteName($tableName))->where($whereSql);
-
-            $formData = $db->setQuery($q)->loadObject();
-        }
+        $config = $this->config->getTableFormColumns($this->tableName);
 
         $dataset = array();
 
-        foreach ($forms as $fieldName => $fieldType)
+        $formData = $this->getFormData($config);
+
+        foreach ($config as $fieldName => $fieldType)
         {
             $field = array();
 
-            $field['name'] = $tableName . ucfirst($fieldName);
+            $field['name'] = $this->helper->getInputAlias($this->tableName, $fieldName);
 
             $field['type'] = $fieldType;
 
@@ -76,30 +29,43 @@ class DefaultFormController
         return $dataset;
     }
 
-    public function render($tasks, $value)
+    public function getFormData($columns)
     {
-        $tableName = $tasks[0];
+        // get configs columns that is id field
+        $indexFields = array_keys($columns, "id");
 
-        $app = \JFactory::getApplication();
-        $doc = $app->getDocument();
+        $formData = array();
 
-        // show component only
-        $app->input->set("tmpl", "component");
+        // they is no index to find data
+        if (empty($indexFields))
+        {
+            return $formData;
+        }
 
-        // Set the MIME type for JSON output.
-        $doc->setMimeEncoding('application/json');
+        $q = $this->db->getQuery(true);
 
-        // Change the suggested filename.
-        \JResponse::setHeader('Content-Disposition','attachment;filename="' . $tableName . '.json"');
+        $whereSql = array();
 
-        // Output the JSON data.
-        return json_encode($value);
+        foreach ($indexFields as $fieldName)
+        {
+            $value = $this->helper->getInputValue($fieldName, "int", false);
+
+            $whereSql[] = $this->helper->getSqlSame($fieldName, $value);
+        }
+
+        $q->select("*")->from(
+            $this->helper->getTableSqlName()
+        )->where($whereSql);
+
+        $formData = $this->db->setQuery($q)->loadObject();
+
+        return $formData;
     }
 
-    public function execute($tasks)
+    public function execute()
     {
-        $formData = $this->getFormData($tasks);
+        $formData = $this->getForm();
 
-        return $this->render($tasks, $formData);
+        return $this->jsonRender($formData);
     }
 }

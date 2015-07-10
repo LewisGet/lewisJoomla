@@ -4,7 +4,7 @@ namespace Lewis\Di;
 
 class Container
 {
-    public static $data;
+    public static $data = array();
 
     public function get($name)
     {

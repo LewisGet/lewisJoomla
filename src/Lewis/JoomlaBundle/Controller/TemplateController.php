@@ -10,6 +10,9 @@ class TemplateController
 
     public function load($template)
     {
+        $app = \JFactory::getApplication();
+        $input  = $app->input;
+
         $this->container = new Container();
 
         $bundlePath = $this->container->get("bundlePath");
